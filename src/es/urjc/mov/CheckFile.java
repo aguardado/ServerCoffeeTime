@@ -2,35 +2,41 @@ package es.urjc.mov;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.StringTokenizer;
+import java.io.IOException;
 
 public class CheckFile {
 	
-	public int checkInfoOk(String name, String pswd){
+	public static int checkInfoOk(String name, String pswd){
 		int status = 0;
+		BufferedReader bf = null;
 		try{
 			FileReader fr = new FileReader("InfoUsersCoffe.txt");
-			BufferedReader bf = new BufferedReader(fr);
+			bf = new BufferedReader(fr);
 			
 			String sCadena;
 			while ((sCadena = bf.readLine())!=null) {
-				StringTokenizer stringTokenizer = new StringTokenizer(sCadena);
-				while (stringTokenizer.hasMoreElements()) {
-					String usuario = stringTokenizer.nextElement().toString();
-					String contraseña = stringTokenizer.nextElement().toString();
-					
-					StringBuilder sb = new StringBuilder();
-					sb.append("\nUUSuario : " + usuario);
-					sb.append("\nCCOntraseña : " + contraseña);
-					//System.out.println("Usuario_check: " + stringTokenizer.);
-					//System.out.println("Contraseña_check: " + stringTokenizer.countTokens());
+				//System.err.println("\nLinea : " + sCadena);
+				String tokens[] = sCadena.split(" ");
+				String user = tokens[0];
+				String pass = tokens[1];
+				
+				if(user.equals(name)  && pass.equals(pswd)){
+					status = 1; 
+					break;
 				}
-				
-				
+			//bf.close();	
 			}
 			
 		}catch(Exception e){
 			e.printStackTrace();
+		}finally {
+			try {
+				if (bf != null){
+					bf.close();
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
 		}
 		return status;
 	}

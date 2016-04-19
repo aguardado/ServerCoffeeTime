@@ -2,7 +2,7 @@ package es.urjc.mov;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
-//import java.io.DataOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -10,21 +10,19 @@ public class Serverproc implements Runnable{
 	
 	private Socket socket;
 	private DataInputStream in;
-	//private DataOutputStream out;
+	private DataOutputStream out;
 	
 	
 	public Serverproc(Socket socketclient){
 		this.socket = socketclient;
 		try {
 			in = new DataInputStream(socket.getInputStream());
-			//out = new DataOutputStream(socket.getOutputStream());
+			out = new DataOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	//checkInfoOk(String name, String pswd)
-	//http://www.mkyong.com/java/java-stringtokenizer-example/
+
 	
 	public void readLog(){
 		try{
@@ -41,7 +39,13 @@ public class Serverproc implements Runnable{
 			in.read(bufContraseña);
 			String contraseña = new String(bufContraseña, "UTF-8");
 			System.err.println("\nContraseña: " + contraseña);
-			
+			int checkLog = CheckFile.checkInfoOk(usuario, contraseña);
+			out.writeInt(checkLog);
+			if(checkLog == 0){
+				System.err.println("Usuario y contraseña incorrectos");
+			}else{
+				System.err.println("Usuario y contraseña correctos");
+			}
 			
 		}catch (Exception e){
 			throw new RuntimeException(this + ": " + e);
@@ -66,33 +70,19 @@ public class Serverproc implements Runnable{
 	
 	@Override
 	public void run() {
-		for(;;){
 			try {
 				byte header = in.readByte();
 				switch(header){
-				case Msg.USER:
-					System.err.println("USER: ");
-					readInfoClient();
-					break;
-				case Msg.PSWD:
-					System.err.println("CONTRASEÑA: ");
-					readInfoClient();
-					break;
 				case Msg.LOG:
 					readLog();
 					break;
 				default:
 					System.err.println("ERROR: this mesage dont exist");
 				}
-			} catch (EOFException e) {
-				break;
+			} catch (EOFException o) {
 			} catch (Exception e) {
-				System.err.println("OJO");
-				throw new RuntimeException(this + ": " + e);
-				
+				e.printStackTrace();
 			}	
-		}
-		
 	}
 
 }
