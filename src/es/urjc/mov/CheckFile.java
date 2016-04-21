@@ -24,7 +24,41 @@ public class CheckFile {
 					status = 1; 
 					break;
 				}
-			//bf.close();	
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally {
+			try {
+				if (bf != null){
+					bf.close();
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return status;
+	}
+	
+	public static int checkUser(String origen, String destino){
+		int status = 0;
+		BufferedReader bf = null;
+		try{
+			FileReader fr = new FileReader("InfoUsersCoffe.txt");
+			bf = new BufferedReader(fr);
+			
+			String sCadena;
+			while ((sCadena = bf.readLine())!=null) {
+				String tokens[] = sCadena.split(" ");
+				String user = tokens[0];
+			
+				if((user.equals(origen)) && (user.equals(destino))){
+					status = 1; 
+					break;
+				}else if(user.equals(destino)){
+					status = 2;
+					break;
+				}
 			}
 			
 		}catch(Exception e){

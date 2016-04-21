@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+
 public class Server {
 	private ServerSocket socket;
+	ListMsg listmsg;
+	
 	 
     public Server (String port) throws IOException{
     	this.socket = new ServerSocket(Integer.parseInt(port));
+    	listmsg = new ListMsg();
     }
     
     public void start() {
@@ -18,7 +22,7 @@ public class Server {
     			Socket clientSocket = this.socket.accept();
     			System.err.println("Cliente aceptado");
     		
-    			new Thread(new Serverproc(clientSocket)).start();
+    			new Thread(new Serverproc(clientSocket, listmsg)).start();
     			
     		}catch(Exception e){
     			System.err.println("Error aceptar cliente");
